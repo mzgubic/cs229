@@ -63,10 +63,6 @@ class GDA(LinearModel):
 
         # Write theta in terms of the parameters
         self.theta = np.matmul(inv_sigma, mu_1-mu_0)
-        print()
-        print(mu_0)
-        print(inv_sigma)
-        print(np.matmul(inv_sigma, mu_0))
         self.theta_0 = 0.5 * ( np.dot(mu_0, np.dot(inv_sigma, mu_0)) - np.dot(mu_1, np.dot(inv_sigma, mu_1)) )
         self.theta_0 -= np.log((1.0-phi) / phi)
 
