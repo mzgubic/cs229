@@ -18,8 +18,18 @@ def main(tau, train_path, eval_path):
 
     # *** START CODE HERE ***
     # Fit a LWR model
+    model = LocallyWeightedLinearRegression(tau=tau)
+    model.fit(x_train, y_train)
     # Get MSE value on the validation set
+    x_valid, y_valid = util.load_dataset(eval_path, add_intercept=True)
+    y_pred = model.predict(x_valid)
+    mse = np.sum((y_pred - y_valid)**2)
+    print(mse)
     # Plot validation predictions on top of training set
+    fig, ax = plt.subplots()
+    ax.scatter(x_train[:,1], y_train, color='b', marker='x')
+    ax.scatter(x_valid[:,1], y_pred, color='r', marker='o')
+    plt.show()
     # No need to save anything
     # Plot data
     # *** END CODE HERE ***
@@ -37,6 +47,13 @@ class LocallyWeightedLinearRegression(LinearModel):
 
         """
         # *** START CODE HERE ***
+        x_mean = np.mean(x[:,1])
+        weights = np.e**(-(x[:,1] - x_mean)**2 / (2 * self.tau**2))
+        weights = np.diag(weights)
+
+        inv_matrix1 = np.linalg.inv(np.matmul(x.T, np.matmul(weights, x)))
+        matrix2 = np.matmul(x.T, np.matmul(weights, y))
+        self.theta = np.matmul(inv_matrix1, matrix2)
         # *** END CODE HERE ***
 
     def predict(self, x):
@@ -49,4 +66,6 @@ class LocallyWeightedLinearRegression(LinearModel):
             Outputs of shape (m,).
         """
         # *** START CODE HERE ***
+        return np.matmul(x, self.theta)
         # *** END CODE HERE ***
+
